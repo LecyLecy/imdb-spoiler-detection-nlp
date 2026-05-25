@@ -1,0 +1,13 @@
+pandas
+numpy
+scikit-learn
+nltk
+matplotlib
+seaborn
+streamlit
+joblib
+kaggle
+python-dotenv
+ipykernel
+tqdm
+scipy
