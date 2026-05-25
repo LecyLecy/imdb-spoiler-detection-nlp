@@ -1,8 +1,8 @@
 .env
 data/
 *.zip
-*.pkl
 .vscode
 .venv
 imdb_venv/
 setup.txt
+docs/

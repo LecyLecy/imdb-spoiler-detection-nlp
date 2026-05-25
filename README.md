@@ -1,97 +1,137 @@
 # IMDb Spoiler Detection NLP
 
-A Natural Language Processing project for detecting spoiler content in IMDb movie reviews using text preprocessing, TF-IDF feature extraction, and machine learning classification models.
+Project ini membangun sistem klasifikasi teks untuk mendeteksi apakah sebuah review IMDb mengandung spoiler atau tidak. Model menggunakan pendekatan Natural Language Processing (NLP) klasik berbasis TF-IDF, fitur tambahan panjang ulasan, dan beberapa algoritma machine learning ringan tanpa deep learning.
 
 ## Overview
 
-This project builds a spoiler detection system that classifies movie reviews into two categories:
+Sistem mengklasifikasikan review ke dalam dua kategori:
 
 - `Spoiler`
 - `Non-Spoiler`
 
-The system uses IMDb review text as input and predicts whether the review contains potential spoiler content. This can be useful for review platforms, movie communities, or content moderation systems that want to protect users from unwanted plot reveals.
+Tujuan utama project ini adalah membantu proses filter review secara otomatis agar pengguna dapat membaca ulasan film atau serial tanpa terkena bocoran alur cerita, plot twist, atau ending.
 
 ## Dataset
 
-The project uses the IMDb Spoiler Dataset from Kaggle:
+Dataset yang digunakan adalah IMDb Spoiler Dataset dari Kaggle:
 
 https://www.kaggle.com/datasets/rmisra/imdb-spoiler-dataset
 
-Main file used:
+File utama:
 
 ```text
 IMDB_reviews.json
 ```
 
-Main columns:
+Kolom utama yang digunakan:
 
 | Column | Description |
 |---|---|
-| `review_text` | Full movie review text |
-| `is_spoiler` | Target label indicating whether the review contains spoiler content |
+| `review_text` | Teks lengkap review IMDb |
+| `is_spoiler` | Label target, 1 untuk spoiler dan 0 untuk non-spoiler |
+
+Project ini menggunakan seluruh dataset tanpa balancing manual agar distribusi data tetap merepresentasikan kondisi asli.
 
 ## Project Workflow
 
-The main pipeline includes:
+Alur utama notebook:
 
-1. Dataset loading from Kaggle
-2. Dataset balancing
-3. Text preprocessing
-4. TF-IDF feature extraction
-5. Model training and evaluation
-6. Threshold tuning
-7. Best model selection based on F1-score
-8. Manual spoiler prediction testing
+1. Load dataset dari Kaggle atau cache lokal
+2. Exploratory Data Analysis (EDA)
+3. Preprocessing dan feature engineering
+4. Data splitting dengan rasio 80% train dan 20% test
+5. Feature extraction menggunakan TF-IDF unigram dan bigram
+6. Training beberapa model machine learning
+7. Evaluasi model menggunakan Accuracy, Precision, Recall, F1-Score, Confusion Matrix, dan Classification Report
+8. Pemilihan best model berdasarkan F1-Score
+9. Pengujian 20 random sample review
+10. Penyimpanan best model pipeline
 
-## Text Preprocessing
+## Exploratory Data Analysis
 
-The preprocessing stage includes:
+EDA dilakukan untuk memahami karakteristik dataset sebelum training model:
 
-- Lowercasing
-- Removing punctuation
-- Removing digits
-- Tokenization
-- Stopword removal
-- Lemmatization
+- Distribusi label spoiler dan non-spoiler
+- Proporsi kelas untuk melihat imbalance data
+- Distribusi panjang review berdasarkan `word_count`
+- Top words pada review spoiler dan non-spoiler
+
+Visualisasi hasil evaluasi model disimpan di:
+
+```text
+figures/best_model_visualization.png
+```
+
+## Preprocessing & Feature Engineering
+
+Preprocessing mengikuti pendekatan notebook `NLPB.ipynb`, yaitu mempertahankan teks review asli dan melakukan transformasi di dalam pipeline.
+
+Fitur yang digunakan:
+
+- `review_text`: teks review mentah
+- `word_count`: jumlah kata dalam review sebagai meta-feature
+
+Feature extraction:
+
+- `TfidfVectorizer`
+- `ngram_range=(1, 2)` untuk unigram dan bigram
+- `max_features=15000`
+- custom English stop words, termasuk stop words umum dan beberapa kata domain film seperti `movie`, `film`, `character`, dan `story`
+- `StandardScaler` untuk menstandarkan fitur numerik `word_count`
+
+Pendekatan ini menjaga konteks kalimat tetap tersedia, sekaligus mengurangi noise dari kata yang terlalu umum.
 
 ## Models
 
-The project compares multiple machine learning models for text classification, including:
+Notebook membandingkan beberapa model machine learning:
 
-- Logistic Regression
+- SGD Classifier + Meta Feature
+- Linear SVC + Meta Feature
+- Passive Aggressive Classifier + Meta Feature
 - Multinomial Naive Bayes
-- Linear SVC
-- Random Forest
+- Complement Naive Bayes
 
-The final model is selected based on the highest F1-score on the test set.
+Logistic Regression tidak digunakan pada versi terbaru. Model terbaik dipilih berdasarkan nilai F1-Score tertinggi pada test set.
 
 ## Evaluation Metrics
 
-The models are evaluated using:
+Metrik evaluasi:
 
 - Accuracy
 - Precision
 - Recall
-- F1-score
+- F1-Score
 - Confusion Matrix
+- Classification Report
 
-F1-score is used as the main metric because spoiler detection requires a balance between correctly detecting spoiler reviews and avoiding excessive false positives.
+F1-Score digunakan sebagai metrik utama karena deteksi spoiler membutuhkan keseimbangan antara kemampuan menemukan review spoiler dan menghindari terlalu banyak false positive.
+
+## Saved Model
+
+Best model disimpan sebagai pipeline utuh sehingga preprocessing, feature extraction, dan classifier dapat digunakan kembali dalam satu objek.
+
+Output model:
+
+```text
+models/spoiler_detection_pipeline.pkl
+models/best_model_name.pkl
+models/model_comparison_results.pkl
+```
 
 ## Repository Structure
 
 ```text
 imdb-spoiler-detection-nlp/
-├── data/                         # Local dataset folder, ignored by Git
-├── figures/                      # Saved visualizations
-├── models/                       # Saved trained model and vectorizer
-├── imdb_venv/                    # Local virtual environment, ignored by Git
-├── .env                          # Kaggle credentials, ignored by Git
-├── .env.example                  # Environment variable template
-├── .gitignore
-├── imdb-spoiler-detection.ipynb
-├── README.md
-├── requirements.txt
-└── setup.txt
+|-- data/                         # Local dataset folder, ignored by Git
+|-- figures/                      # Saved visualizations
+|-- models/                       # Saved trained model pipeline
+|-- imdb_venv/                    # Local virtual environment, ignored by Git
+|-- .env                          # Kaggle credentials, ignored by Git
+|-- .env.example                  # Environment variable template
+|-- .gitignore
+|-- imdb-spoiler-detection-old.ipynb
+|-- README.md
+|-- requirements.txt
 ```
 
 ## Setup
@@ -99,13 +139,11 @@ imdb-spoiler-detection-nlp/
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/USERNAME/imdb-spoiler-detection-nlp.git
+git clone https://github.com/LecyLecy/imdb-spoiler-detection-nlp.git
 cd imdb-spoiler-detection-nlp
 ```
 
 ### 2. Create Python Virtual Environment
-
-This project is recommended to run with Python 3.11.
 
 ```bash
 py -3.11 -m venv imdb_venv
@@ -125,72 +163,61 @@ python -m pip install -r requirements.txt
 python -m ipykernel install --user --name imdb_spoiler_nlp --display-name "Python (imdb_spoiler_nlp)"
 ```
 
-After that, open the notebook and select:
+Setelah itu, buka notebook dan pilih kernel:
 
 ```text
 Python (imdb_spoiler_nlp)
 ```
 
-as the active kernel.
-
 ## Kaggle API Setup
 
-Create a `.env` file in the root project directory:
+Buat file `.env` di root project:
 
 ```env
 KAGGLE_USERNAME=your_kaggle_username
 KAGGLE_KEY=your_kaggle_api_key
 ```
 
-You can get your Kaggle API key from:
+Kaggle API key bisa dibuat dari:
 
 ```text
-Kaggle Account Settings → API → Create New Token
+Kaggle Account Settings -> API -> Create New Token
 ```
 
-Make sure `.env` is not committed to GitHub.
-
-Use `.env.example` as a safe public template:
-
-```env
-KAGGLE_USERNAME=your_kaggle_username
-KAGGLE_KEY=your_kaggle_api_key
-```
+Pastikan `.env` tidak di-commit ke GitHub.
 
 ## Running the Notebook
 
-Open the notebook:
+Buka notebook:
 
 ```text
-imdb-spoiler-detection.ipynb
+imdb-spoiler-detection-old.ipynb
 ```
 
-Then run the cells in order.
+Lalu jalankan cell secara berurutan. Notebook akan:
 
-The notebook will:
+- Mengecek dataset lokal
+- Download dataset dari Kaggle jika belum tersedia
+- Load seluruh dataset
+- Melakukan EDA dan visualisasi
+- Membuat fitur TF-IDF dan `word_count`
+- Melatih beberapa model
+- Memilih model terbaik berdasarkan F1-Score
+- Menguji 20 random sample review
+- Menyimpan best model pipeline
 
-- Check whether the dataset already exists locally
-- Download the dataset from Kaggle if needed
-- Load and balance the data
-- Preprocess the review text
-- Extract TF-IDF features
-- Train and compare models
-- Select the best model
-- Test spoiler prediction manually
-
-## Example Prediction Output
+## Example Prediction
 
 ```text
 sample_review = The movie ends with the main character dying in the final scene.
 Model yakin 82.89% bahwa sample_review adalah spoiler
 Model yakin 17.11% bahwa sample_review adalah bukan spoiler
-threshold used = 0.39
 Final prediction = spoiler
 ```
 
 ## Git Ignore Recommendation
 
-The following files and folders should not be pushed to GitHub:
+File dan folder berikut tidak perlu dipush ke GitHub:
 
 ```gitignore
 .env
@@ -203,8 +230,8 @@ __pycache__/
 
 ## Notes
 
-The dataset and generated cache files are not included in this repository because they can be downloaded or regenerated from the notebook. This keeps the repository lightweight and easier to reproduce.
+Dataset tidak disertakan dalam repository karena ukuran file besar dan dapat diunduh ulang dari Kaggle. Cache lokal juga dapat dibuat ulang dengan menjalankan notebook.
 
 ## License
 
-This project uses the IMDb Spoiler Dataset from Kaggle. Please refer to the original dataset page for dataset licensing and usage terms.
+Project ini menggunakan IMDb Spoiler Dataset dari Kaggle. Silakan merujuk ke halaman dataset asli untuk detail lisensi dan ketentuan penggunaan.
