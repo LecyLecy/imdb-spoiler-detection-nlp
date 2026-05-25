@@ -5,7 +5,7 @@ Project ini membangun sistem klasifikasi teks untuk mendeteksi apakah sebuah rev
 Try the app:
 
 ```text
-{type_link_here}
+https://imdb-spoiler-detection-nlp.streamlit.app/
 ```
 
 ## Overview
