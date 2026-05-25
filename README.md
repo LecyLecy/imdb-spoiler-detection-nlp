@@ -1,6 +1,12 @@
 # IMDb Spoiler Detection NLP
 
-Project ini membangun sistem klasifikasi teks untuk mendeteksi apakah sebuah review IMDb mengandung spoiler atau tidak. Model menggunakan pendekatan Natural Language Processing (NLP) klasik berbasis TF-IDF, fitur tambahan panjang ulasan, dan beberapa algoritma machine learning ringan tanpa deep learning.
+Project ini membangun sistem klasifikasi teks untuk mendeteksi apakah sebuah review IMDb mengandung spoiler atau tidak. Model menggunakan pendekatan Natural Language Processing (NLP) klasik berbasis TF-IDF, fitur tambahan panjang ulasan, dan beberapa algoritma machine learning ringan tanpa deep learning. Project ini juga menyediakan aplikasi Streamlit sederhana untuk mencoba prediksi spoiler secara interaktif.
+
+Try the app:
+
+```text
+{type_link_here}
+```
 
 ## Overview
 
@@ -118,6 +124,91 @@ models/best_model_name.pkl
 models/model_comparison_results.pkl
 ```
 
+File `app.py` memuat `spoiler_detection_pipeline.pkl` dan `best_model_name.pkl` dari folder `models/`. Input pengguna akan diubah menjadi DataFrame dengan kolom `review_text` dan `word_count`, lalu diprediksi menggunakan pipeline yang sama seperti hasil training notebook.
+
+## Streamlit App
+
+Project ini memiliki aplikasi web interaktif berbasis Streamlit:
+
+```text
+app.py
+```
+
+Aplikasi melakukan langkah berikut:
+
+- Memuat best model pipeline dari folder `models/`
+- Menghitung `word_count` dari review yang dimasukkan pengguna
+- Membuat input dengan format kolom `review_text` dan `word_count`
+- Mengambil probabilitas spoiler menggunakan `predict_proba`
+- Menentukan hasil akhir dengan threshold manual `0.40`
+- Menampilkan label `SPOILER DETECTED` atau `SAFE TO READ`
+
+Jalankan aplikasi dengan:
+
+```bash
+streamlit run app.py
+```
+
+Pastikan file model berikut sudah tersedia sebelum menjalankan aplikasi:
+
+```text
+models/spoiler_detection_pipeline.pkl
+models/best_model_name.pkl
+```
+
+Jika aplikasi gagal memuat model karena perbedaan versi dependency, jalankan notebook ulang pada environment aktif untuk menghasilkan ulang file `.pkl`.
+
+## Deployment
+
+Deployment yang direkomendasikan adalah Streamlit Community Cloud karena project ini sudah memiliki `app.py`, `requirements.txt`, dan file model di folder `models/`.
+
+Langkah deploy:
+
+1. Pastikan file penting sudah ada di repository:
+
+```text
+app.py
+requirements.txt
+models/spoiler_detection_pipeline.pkl
+models/best_model_name.pkl
+```
+
+2. Pastikan semua perubahan sudah dipush ke GitHub:
+
+```bash
+git status
+git add README.md requirements.txt app.py models/
+git commit -m "Prepare Streamlit deployment"
+git push origin main
+```
+
+3. Buka Streamlit Community Cloud:
+
+```text
+https://share.streamlit.io
+```
+
+4. Login menggunakan akun GitHub yang memiliki akses ke repository ini.
+
+5. Klik `Create app`, lalu pilih opsi untuk deploy app dari repository yang sudah ada.
+
+6. Isi konfigurasi deployment:
+
+```text
+Repository : LecyLecy/imdb-spoiler-detection-nlp
+Branch     : main
+Main file  : app.py
+App URL    : bebas, sesuai nama yang tersedia
+```
+
+7. Jika diminta memilih Python version, gunakan Python 3.11 agar sesuai dengan environment development project.
+
+8. Klik deploy dan tunggu proses install dependencies dari `requirements.txt` selesai.
+
+9. Setelah deploy berhasil, salin link aplikasi dari Streamlit dan letakkan pada placeholder `Try the app` di bagian atas README.
+
+10. Jika deploy gagal, cek bagian logs di Streamlit Cloud. Error yang paling mungkin terjadi adalah dependency mismatch atau file model tidak ditemukan.
+
 ## Repository Structure
 
 ```text
@@ -129,6 +220,7 @@ imdb-spoiler-detection-nlp/
 |-- .env                          # Kaggle credentials, ignored by Git
 |-- .env.example                  # Environment variable template
 |-- .gitignore
+|-- app.py                        # Streamlit app for spoiler prediction
 |-- imdb-spoiler-detection-old.ipynb
 |-- README.md
 |-- requirements.txt
@@ -205,6 +297,12 @@ Lalu jalankan cell secara berurutan. Notebook akan:
 - Memilih model terbaik berdasarkan F1-Score
 - Menguji 20 random sample review
 - Menyimpan best model pipeline
+
+Setelah model tersimpan, aplikasi Streamlit dapat dijalankan dengan:
+
+```bash
+streamlit run app.py
+```
 
 ## Example Prediction
 
