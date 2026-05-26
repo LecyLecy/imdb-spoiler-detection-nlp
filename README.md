@@ -31,10 +31,10 @@ IMDB_reviews.json
 
 Main columns used:
 
-| Column | Description |
-|---|---|
-| `review_text` | Full IMDb review text |
-| `is_spoiler` | Target label, 1 for spoiler and 0 for non-spoiler |
+| Column          | Description                                       |
+| --------------- | ------------------------------------------------- |
+| `review_text` | Full IMDb review text                             |
+| `is_spoiler`  | Target label, 1 for spoiler and 0 for non-spoiler |
 
 This project uses the full dataset without manual balancing so the data distribution still represents the original conditions.
 
@@ -140,7 +140,6 @@ The app performs the following steps:
 - Calculates `word_count` from the review entered by the user
 - Creates input using the `review_text` and `word_count` column format
 - Retrieves the spoiler probability using `predict_proba`
-- Determines the final result with a manual threshold of `0.40`
 - Displays the `SPOILER DETECTED` or `SAFE TO READ` label
 
 Run the app with:
@@ -189,9 +188,7 @@ https://share.streamlit.io
 ```
 
 4. Log in using the GitHub account that has access to this repository.
-
 5. Click `Create app`, then choose the option to deploy an app from an existing repository.
-
 6. Fill in the deployment configuration:
 
 ```text
@@ -202,11 +199,8 @@ App URL    : free to choose, depending on the available name
 ```
 
 7. If prompted to choose a Python version, use Python 3.11 to match the project's development environment.
-
 8. Click deploy and wait for the dependency installation process from `requirements.txt` to finish.
-
 9. After deployment succeeds, copy the Streamlit app link and place it in the `Try the app` placeholder at the top of the README.
-
 10. If deployment fails, check the logs section in Streamlit Cloud. The most likely errors are dependency mismatch or missing model files.
 
 ## Repository Structure
