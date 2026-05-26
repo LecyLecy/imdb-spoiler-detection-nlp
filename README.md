@@ -1,6 +1,6 @@
 # IMDb Spoiler Detection NLP
 
-Project ini membangun sistem klasifikasi teks untuk mendeteksi apakah sebuah review IMDb mengandung spoiler atau tidak. Model menggunakan pendekatan Natural Language Processing (NLP) klasik berbasis TF-IDF, fitur tambahan panjang ulasan, dan beberapa algoritma machine learning ringan tanpa deep learning. Project ini juga menyediakan aplikasi Streamlit sederhana untuk mencoba prediksi spoiler secara interaktif.
+This project builds a text classification system to detect whether an IMDb review contains spoilers. The model uses a classic Natural Language Processing (NLP) approach based on TF-IDF, an additional review-length feature, and several lightweight machine learning algorithms without deep learning. This project also provides a simple Streamlit app for trying spoiler predictions interactively.
 
 Try the app:
 
@@ -10,59 +10,59 @@ https://imdb-spoiler-detection-nlp.streamlit.app/
 
 ## Overview
 
-Sistem mengklasifikasikan review ke dalam dua kategori:
+The system classifies reviews into two categories:
 
 - `Spoiler`
 - `Non-Spoiler`
 
-Tujuan utama project ini adalah membantu proses filter review secara otomatis agar pengguna dapat membaca ulasan film atau serial tanpa terkena bocoran alur cerita, plot twist, atau ending.
+The main goal of this project is to help automatically filter reviews so users can read movie or series reviews without being exposed to story details, plot twists, or endings.
 
 ## Dataset
 
-Dataset yang digunakan adalah IMDb Spoiler Dataset dari Kaggle:
+The dataset used is the IMDb Spoiler Dataset from Kaggle:
 
 https://www.kaggle.com/datasets/rmisra/imdb-spoiler-dataset
 
-File utama:
+Main file:
 
 ```text
 IMDB_reviews.json
 ```
 
-Kolom utama yang digunakan:
+Main columns used:
 
 | Column | Description |
 |---|---|
-| `review_text` | Teks lengkap review IMDb |
-| `is_spoiler` | Label target, 1 untuk spoiler dan 0 untuk non-spoiler |
+| `review_text` | Full IMDb review text |
+| `is_spoiler` | Target label, 1 for spoiler and 0 for non-spoiler |
 
-Project ini menggunakan seluruh dataset tanpa balancing manual agar distribusi data tetap merepresentasikan kondisi asli.
+This project uses the full dataset without manual balancing so the data distribution still represents the original conditions.
 
 ## Project Workflow
 
-Alur utama notebook:
+Main notebook workflow:
 
-1. Load dataset dari Kaggle atau cache lokal
-2. Exploratory Data Analysis (EDA)
-3. Preprocessing dan feature engineering
-4. Data splitting dengan rasio 80% train dan 20% test
-5. Feature extraction menggunakan TF-IDF unigram dan bigram
-6. Training beberapa model machine learning
-7. Evaluasi model menggunakan Accuracy, Precision, Recall, F1-Score, Confusion Matrix, dan Classification Report
-8. Pemilihan best model berdasarkan F1-Score
-9. Pengujian 20 random sample review
-10. Penyimpanan best model pipeline
+1. Load the dataset from Kaggle or local cache
+2. Perform Exploratory Data Analysis (EDA)
+3. Perform preprocessing and feature engineering
+4. Split the data with an 80% train and 20% test ratio
+5. Extract features using TF-IDF unigrams and bigrams
+6. Train several machine learning models
+7. Evaluate models using Accuracy, Precision, Recall, F1-Score, Confusion Matrix, and Classification Report
+8. Select the best model based on F1-Score
+9. Test 20 random review samples
+10. Save the best model pipeline
 
 ## Exploratory Data Analysis
 
-EDA dilakukan untuk memahami karakteristik dataset sebelum training model:
+EDA is performed to understand the dataset characteristics before model training:
 
-- Distribusi label spoiler dan non-spoiler
-- Proporsi kelas untuk melihat imbalance data
-- Distribusi panjang review berdasarkan `word_count`
-- Top words pada review spoiler dan non-spoiler
+- Distribution of spoiler and non-spoiler labels
+- Class proportions to inspect data imbalance
+- Review length distribution based on `word_count`
+- Top words in spoiler and non-spoiler reviews
 
-Visualisasi hasil evaluasi model disimpan di:
+The model evaluation visualization is saved at:
 
 ```text
 figures/best_model_visualization.png
@@ -70,26 +70,26 @@ figures/best_model_visualization.png
 
 ## Preprocessing & Feature Engineering
 
-Preprocessing mengikuti pendekatan notebook `NLPB.ipynb`, yaitu mempertahankan teks review asli dan melakukan transformasi di dalam pipeline.
+Preprocessing follows the approach used in the `NLPB.ipynb` notebook, which keeps the original review text and performs transformations inside the pipeline.
 
-Fitur yang digunakan:
+Features used:
 
-- `review_text`: teks review mentah
-- `word_count`: jumlah kata dalam review sebagai meta-feature
+- `review_text`: raw review text
+- `word_count`: number of words in the review as a meta-feature
 
 Feature extraction:
 
 - `TfidfVectorizer`
-- `ngram_range=(1, 2)` untuk unigram dan bigram
+- `ngram_range=(1, 2)` for unigrams and bigrams
 - `max_features=15000`
-- custom English stop words, termasuk stop words umum dan beberapa kata domain film seperti `movie`, `film`, `character`, dan `story`
-- `StandardScaler` untuk menstandarkan fitur numerik `word_count`
+- Custom English stop words, including common stop words and several movie-domain words such as `movie`, `film`, `character`, and `story`
+- `StandardScaler` to standardize the numeric `word_count` feature
 
-Pendekatan ini menjaga konteks kalimat tetap tersedia, sekaligus mengurangi noise dari kata yang terlalu umum.
+This approach keeps sentence context available while reducing noise from overly common words.
 
 ## Models
 
-Notebook membandingkan beberapa model machine learning:
+The notebook compares several machine learning models:
 
 - SGD Classifier + Meta Feature
 - Linear SVC + Meta Feature
@@ -97,11 +97,11 @@ Notebook membandingkan beberapa model machine learning:
 - Multinomial Naive Bayes
 - Complement Naive Bayes
 
-Logistic Regression tidak digunakan pada versi terbaru. Model terbaik dipilih berdasarkan nilai F1-Score tertinggi pada test set.
+Logistic Regression is not used in the latest version. The best model is selected based on the highest F1-Score on the test set.
 
 ## Evaluation Metrics
 
-Metrik evaluasi:
+Evaluation metrics:
 
 - Accuracy
 - Precision
@@ -110,13 +110,13 @@ Metrik evaluasi:
 - Confusion Matrix
 - Classification Report
 
-F1-Score digunakan sebagai metrik utama karena deteksi spoiler membutuhkan keseimbangan antara kemampuan menemukan review spoiler dan menghindari terlalu banyak false positive.
+F1-Score is used as the main metric because spoiler detection requires a balance between finding spoiler reviews and avoiding too many false positives.
 
 ## Saved Model
 
-Best model disimpan sebagai pipeline utuh sehingga preprocessing, feature extraction, dan classifier dapat digunakan kembali dalam satu objek.
+The best model is saved as a complete pipeline so preprocessing, feature extraction, and the classifier can be reused in a single object.
 
-Output model:
+Model outputs:
 
 ```text
 models/spoiler_detection_pipeline.pkl
@@ -124,47 +124,47 @@ models/best_model_name.pkl
 models/model_comparison_results.pkl
 ```
 
-File `app.py` memuat `spoiler_detection_pipeline.pkl` dan `best_model_name.pkl` dari folder `models/`. Input pengguna akan diubah menjadi DataFrame dengan kolom `review_text` dan `word_count`, lalu diprediksi menggunakan pipeline yang sama seperti hasil training notebook.
+The `app.py` file loads `spoiler_detection_pipeline.pkl` and `best_model_name.pkl` from the `models/` folder. User input is converted into a DataFrame with the `review_text` and `word_count` columns, then predicted using the same pipeline produced by the training notebook.
 
 ## Streamlit App
 
-Project ini memiliki aplikasi web interaktif berbasis Streamlit:
+This project includes an interactive web app built with Streamlit:
 
 ```text
 app.py
 ```
 
-Aplikasi melakukan langkah berikut:
+The app performs the following steps:
 
-- Memuat best model pipeline dari folder `models/`
-- Menghitung `word_count` dari review yang dimasukkan pengguna
-- Membuat input dengan format kolom `review_text` dan `word_count`
-- Mengambil probabilitas spoiler menggunakan `predict_proba`
-- Menentukan hasil akhir dengan threshold manual `0.40`
-- Menampilkan label `SPOILER DETECTED` atau `SAFE TO READ`
+- Loads the best model pipeline from the `models/` folder
+- Calculates `word_count` from the review entered by the user
+- Creates input using the `review_text` and `word_count` column format
+- Retrieves the spoiler probability using `predict_proba`
+- Determines the final result with a manual threshold of `0.40`
+- Displays the `SPOILER DETECTED` or `SAFE TO READ` label
 
-Jalankan aplikasi dengan:
+Run the app with:
 
 ```bash
 streamlit run app.py
 ```
 
-Pastikan file model berikut sudah tersedia sebelum menjalankan aplikasi:
+Make sure the following model files are available before running the app:
 
 ```text
 models/spoiler_detection_pipeline.pkl
 models/best_model_name.pkl
 ```
 
-Jika aplikasi gagal memuat model karena perbedaan versi dependency, jalankan notebook ulang pada environment aktif untuk menghasilkan ulang file `.pkl`.
+If the app fails to load the model because of dependency version differences, rerun the notebook in the active environment to regenerate the `.pkl` files.
 
 ## Deployment
 
-Deployment yang direkomendasikan adalah Streamlit Community Cloud karena project ini sudah memiliki `app.py`, `requirements.txt`, dan file model di folder `models/`.
+The recommended deployment platform is Streamlit Community Cloud because this project already includes `app.py`, `requirements.txt`, and model files in the `models/` folder.
 
-Langkah deploy:
+Deployment steps:
 
-1. Pastikan file penting sudah ada di repository:
+1. Make sure the important files are already in the repository:
 
 ```text
 app.py
@@ -173,7 +173,7 @@ models/spoiler_detection_pipeline.pkl
 models/best_model_name.pkl
 ```
 
-2. Pastikan semua perubahan sudah dipush ke GitHub:
+2. Make sure all changes have been pushed to GitHub:
 
 ```bash
 git status
@@ -182,32 +182,32 @@ git commit -m "Prepare Streamlit deployment"
 git push origin main
 ```
 
-3. Buka Streamlit Community Cloud:
+3. Open Streamlit Community Cloud:
 
 ```text
 https://share.streamlit.io
 ```
 
-4. Login menggunakan akun GitHub yang memiliki akses ke repository ini.
+4. Log in using the GitHub account that has access to this repository.
 
-5. Klik `Create app`, lalu pilih opsi untuk deploy app dari repository yang sudah ada.
+5. Click `Create app`, then choose the option to deploy an app from an existing repository.
 
-6. Isi konfigurasi deployment:
+6. Fill in the deployment configuration:
 
 ```text
 Repository : LecyLecy/imdb-spoiler-detection-nlp
 Branch     : main
 Main file  : app.py
-App URL    : bebas, sesuai nama yang tersedia
+App URL    : free to choose, depending on the available name
 ```
 
-7. Jika diminta memilih Python version, gunakan Python 3.11 agar sesuai dengan environment development project.
+7. If prompted to choose a Python version, use Python 3.11 to match the project's development environment.
 
-8. Klik deploy dan tunggu proses install dependencies dari `requirements.txt` selesai.
+8. Click deploy and wait for the dependency installation process from `requirements.txt` to finish.
 
-9. Setelah deploy berhasil, salin link aplikasi dari Streamlit dan letakkan pada placeholder `Try the app` di bagian atas README.
+9. After deployment succeeds, copy the Streamlit app link and place it in the `Try the app` placeholder at the top of the README.
 
-10. Jika deploy gagal, cek bagian logs di Streamlit Cloud. Error yang paling mungkin terjadi adalah dependency mismatch atau file model tidak ditemukan.
+10. If deployment fails, check the logs section in Streamlit Cloud. The most likely errors are dependency mismatch or missing model files.
 
 ## Repository Structure
 
@@ -255,7 +255,7 @@ python -m pip install -r requirements.txt
 python -m ipykernel install --user --name imdb_spoiler_nlp --display-name "Python (imdb_spoiler_nlp)"
 ```
 
-Setelah itu, buka notebook dan pilih kernel:
+After that, open the notebook and select the kernel:
 
 ```text
 Python (imdb_spoiler_nlp)
@@ -263,42 +263,42 @@ Python (imdb_spoiler_nlp)
 
 ## Kaggle API Setup
 
-Buat file `.env` di root project:
+Create a `.env` file in the project root:
 
 ```env
 KAGGLE_USERNAME=your_kaggle_username
 KAGGLE_KEY=your_kaggle_api_key
 ```
 
-Kaggle API key bisa dibuat dari:
+The Kaggle API key can be created from:
 
 ```text
 Kaggle Account Settings -> API -> Create New Token
 ```
 
-Pastikan `.env` tidak di-commit ke GitHub.
+Make sure `.env` is not committed to GitHub.
 
 ## Running the Notebook
 
-Buka notebook:
+Open the notebook:
 
 ```text
 imdb-spoiler-detection-old.ipynb
 ```
 
-Lalu jalankan cell secara berurutan. Notebook akan:
+Then run the cells sequentially. The notebook will:
 
-- Mengecek dataset lokal
-- Download dataset dari Kaggle jika belum tersedia
-- Load seluruh dataset
-- Melakukan EDA dan visualisasi
-- Membuat fitur TF-IDF dan `word_count`
-- Melatih beberapa model
-- Memilih model terbaik berdasarkan F1-Score
-- Menguji 20 random sample review
-- Menyimpan best model pipeline
+- Check the local dataset
+- Download the dataset from Kaggle if it is not available yet
+- Load the full dataset
+- Perform EDA and visualization
+- Create TF-IDF and `word_count` features
+- Train several models
+- Select the best model based on F1-Score
+- Test 20 random review samples
+- Save the best model pipeline
 
-Setelah model tersimpan, aplikasi Streamlit dapat dijalankan dengan:
+After the model is saved, the Streamlit app can be run with:
 
 ```bash
 streamlit run app.py
@@ -308,14 +308,14 @@ streamlit run app.py
 
 ```text
 sample_review = The movie ends with the main character dying in the final scene.
-Model yakin 82.89% bahwa sample_review adalah spoiler
-Model yakin 17.11% bahwa sample_review adalah bukan spoiler
+The model is 82.89% confident that sample_review is a spoiler
+The model is 17.11% confident that sample_review is not a spoiler
 Final prediction = spoiler
 ```
 
 ## Git Ignore Recommendation
 
-File dan folder berikut tidak perlu dipush ke GitHub:
+The following files and folders do not need to be pushed to GitHub:
 
 ```gitignore
 .env
@@ -328,8 +328,8 @@ __pycache__/
 
 ## Notes
 
-Dataset tidak disertakan dalam repository karena ukuran file besar dan dapat diunduh ulang dari Kaggle. Cache lokal juga dapat dibuat ulang dengan menjalankan notebook.
+The dataset is not included in the repository because the file size is large and it can be downloaded again from Kaggle. The local cache can also be regenerated by running the notebook.
 
 ## License
 
-Project ini menggunakan IMDb Spoiler Dataset dari Kaggle. Silakan merujuk ke halaman dataset asli untuk detail lisensi dan ketentuan penggunaan.
+This project uses the IMDb Spoiler Dataset from Kaggle. Please refer to the original dataset page for license details and usage terms.
