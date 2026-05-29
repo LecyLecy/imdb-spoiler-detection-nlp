@@ -38,8 +38,8 @@ def load_components():
 # --- LOAD KOMPONEN ---
 pipeline, model_name = load_components()
 
-# --- SET MANUAL THRESHOLD KE 55% ---
-threshold = 0.40 
+# --- SET STANDARD THRESHOLD ---
+threshold = 0.50
 
 # --- TAMPILAN UI STREAMLIT ---
 st.title("🎬 Movie Spoiler Detector")
@@ -78,7 +78,7 @@ if st.button("Deteksi Spoiler", type="primary"):
                 probabilities = pipeline.predict_proba(input_df)[0]
                 spoiler_prob = probabilities[1]
                 
-                # 4. Tentukan hasil berdasarkan threshold manual 55%
+                # 4. Tentukan hasil berdasarkan standard threshold 50%
                 is_spoiler = spoiler_prob >= threshold
                 
                 # 5. Tampilkan hasil ke UI
