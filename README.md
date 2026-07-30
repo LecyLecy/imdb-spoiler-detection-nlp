@@ -1,329 +1,160 @@
-# IMDb Spoiler Detection NLP
+<div align="center">
 
-This project builds a text classification system to detect whether an IMDb review contains spoilers. The model uses a classic Natural Language Processing (NLP) approach based on TF-IDF, an additional review-length feature, and several lightweight machine learning algorithms without deep learning. This project also provides a simple Streamlit app for trying spoiler predictions interactively.
+# PlotGuard
 
-Try the app:
+### An NLP-powered movie spoiler detector
 
-```text
-https://imdb-spoiler-detection-nlp.streamlit.app/
-```
+Paste an IMDb-style review and estimate whether it reveals important plot details before you read it.
+
+[Open the live app](https://imdb-spoiler-detection-nlp.streamlit.app/) · [Explore the training notebook](./imdb-spoiler-detection.ipynb) · [View the dataset](https://www.kaggle.com/datasets/rmisra/imdb-spoiler-dataset)
+
+</div>
 
 ## Overview
 
-The system classifies reviews into two categories:
+PlotGuard is an end-to-end natural language processing project that classifies movie reviews as `spoiler` or `non-spoiler`. It combines TF–IDF text features with review length and serves the trained classifier through a polished Streamlit interface.
 
-- `Spoiler`
-- `Non-Spoiler`
+The project covers the complete applied ML workflow:
 
-The main goal of this project is to help automatically filter reviews so users can read movie or series reviews without being exposed to story details, plot twists, or endings.
+- exploratory data analysis on the IMDb Spoiler Dataset
+- feature engineering for review text and word count
+- comparison of five lightweight classification algorithms
+- model selection based on spoiler-class F1-score
+- serialized inference pipeline for consistent preprocessing
+- interactive, portfolio-ready web application
 
-## Dataset
+## Product experience
 
-The dataset used is the IMDb Spoiler Dataset from Kaggle:
+The Streamlit app is designed around a simple decision: is this review safe to read?
 
-https://www.kaggle.com/datasets/rmisra/imdb-spoiler-dataset
+- Paste any English-language movie review
+- Load safe and spoiler examples for a quick demonstration
+- See the estimated spoiler likelihood and a clear recommendation
+- Inspect the active model, decision threshold, and input length
+- Read an honest limitation notice for ambiguous predictions
 
-Main file:
+## How it works
+
+```mermaid
+flowchart LR
+    A["IMDb review"] --> B["Raw text"]
+    A --> C["Word count"]
+    B --> D["TF–IDF<br/>unigrams + bigrams"]
+    C --> E["Feature scaling"]
+    D --> F["Combined feature space"]
+    E --> F
+    F --> G["SGD classifier"]
+    G --> H["Spoiler likelihood"]
+    H --> I["Safe to read<br/>or potential spoiler"]
+```
+
+The saved scikit-learn pipeline keeps preprocessing and inference together. The app creates the same `review_text` and `word_count` feature schema used during training, then retrieves the spoiler probability with `predict_proba`.
+
+## Model performance
+
+The dataset retains its original class imbalance: approximately 74% non-spoiler reviews and 26% spoiler reviews. F1-score is the primary selection metric because the task requires a balance between detecting spoilers and limiting false alarms.
+
+| Model | Accuracy | Precision | Recall | F1-score |
+| --- | ---: | ---: | ---: | ---: |
+| **SGD Classifier + Meta Feature** | **0.719** | **0.475** | **0.670** | **0.556** |
+| Linear SVC + Meta Feature | 0.720 | 0.477 | 0.662 | 0.555 |
+| Passive Aggressive + Meta Feature | 0.680 | 0.431 | 0.675 | 0.526 |
+| Complement Naive Bayes | 0.680 | 0.429 | 0.654 | 0.518 |
+| Multinomial Naive Bayes | 0.757 | 0.690 | 0.141 | 0.234 |
+
+![Model evaluation charts](./figures/best_model_visualization.png)
+
+These results make the trade-off visible: the selected model finds about 67% of spoiler reviews, but it also produces false positives. PlotGuard therefore presents its result as an experimental likelihood estimate rather than a guarantee.
+
+## Technology
+
+| Area | Tools |
+| --- | --- |
+| Interface | Streamlit |
+| Data | pandas, NumPy |
+| NLP | scikit-learn TF–IDF |
+| Modeling | SGD, Linear SVC, Passive Aggressive, Naive Bayes |
+| Visualization | Matplotlib, Seaborn |
+| Dataset access | Kaggle API |
+| Serialization | joblib |
+
+## Repository structure
 
 ```text
-IMDB_reviews.json
+.
+├── .streamlit/
+│   └── config.toml                 # Application theme
+├── figures/
+│   └── best_model_visualization.png
+├── models/
+│   ├── best_model_name.pkl
+│   ├── model_comparison_results.pkl
+│   └── spoiler_detection_pipeline.pkl
+├── app.py                          # Streamlit application and inference logic
+├── imdb-spoiler-detection.ipynb    # EDA, training, evaluation, and export
+├── tests/
+│   └── test_app.py                 # Saved-model integration checks
+├── README.md
+└── requirements.txt
 ```
 
-Main columns used:
+The raw dataset is intentionally excluded from Git because it can be downloaded again from Kaggle.
 
-| Column          | Description                                       |
-| --------------- | ------------------------------------------------- |
-| `review_text` | Full IMDb review text                             |
-| `is_spoiler`  | Target label, 1 for spoiler and 0 for non-spoiler |
+## Run locally
 
-This project uses the full dataset without manual balancing so the data distribution still represents the original conditions.
-
-## Project Workflow
-
-Main notebook workflow:
-
-1. Load the dataset from Kaggle or local cache
-2. Perform Exploratory Data Analysis (EDA)
-3. Perform preprocessing and feature engineering
-4. Split the data with an 80% train and 20% test ratio
-5. Extract features using TF-IDF unigrams and bigrams
-6. Train several machine learning models
-7. Evaluate models using Accuracy, Precision, Recall, F1-Score, Confusion Matrix, and Classification Report
-8. Select the best model based on F1-Score
-9. Test 20 random review samples
-10. Save the best model pipeline
-
-## Exploratory Data Analysis
-
-EDA is performed to understand the dataset characteristics before model training:
-
-- Distribution of spoiler and non-spoiler labels
-- Class proportions to inspect data imbalance
-- Review length distribution based on `word_count`
-- Top words in spoiler and non-spoiler reviews
-
-The model evaluation visualization is saved at:
-
-```text
-figures/best_model_visualization.png
-```
-
-## Preprocessing & Feature Engineering
-
-Preprocessing follows the approach used in the `NLPB.ipynb` notebook, which keeps the original review text and performs transformations inside the pipeline.
-
-Features used:
-
-- `review_text`: raw review text
-- `word_count`: number of words in the review as a meta-feature
-
-Feature extraction:
-
-- `TfidfVectorizer`
-- `ngram_range=(1, 2)` for unigrams and bigrams
-- `max_features=15000`
-- Custom English stop words, including common stop words and several movie-domain words such as `movie`, `film`, `character`, and `story`
-- `StandardScaler` to standardize the numeric `word_count` feature
-
-This approach keeps sentence context available while reducing noise from overly common words.
-
-## Models
-
-The notebook compares several machine learning models:
-
-- SGD Classifier + Meta Feature
-- Linear SVC + Meta Feature
-- Passive Aggressive Classifier + Meta Feature
-- Multinomial Naive Bayes
-- Complement Naive Bayes
-
-Logistic Regression is not used in the latest version. The best model is selected based on the highest F1-Score on the test set.
-
-## Evaluation Metrics
-
-Evaluation metrics:
-
-- Accuracy
-- Precision
-- Recall
-- F1-Score
-- Confusion Matrix
-- Classification Report
-
-F1-Score is used as the main metric because spoiler detection requires a balance between finding spoiler reviews and avoiding too many false positives.
-
-## Saved Model
-
-The best model is saved as a complete pipeline so preprocessing, feature extraction, and the classifier can be reused in a single object.
-
-Model outputs:
-
-```text
-models/spoiler_detection_pipeline.pkl
-models/best_model_name.pkl
-models/model_comparison_results.pkl
-```
-
-The `app.py` file loads `spoiler_detection_pipeline.pkl` and `best_model_name.pkl` from the `models/` folder. User input is converted into a DataFrame with the `review_text` and `word_count` columns, then predicted using the same pipeline produced by the training notebook.
-
-## Streamlit App
-
-This project includes an interactive web app built with Streamlit:
-
-```text
-app.py
-```
-
-The app performs the following steps:
-
-- Loads the best model pipeline from the `models/` folder
-- Calculates `word_count` from the review entered by the user
-- Creates input using the `review_text` and `word_count` column format
-- Retrieves the spoiler probability using `predict_proba`
-- Displays the `SPOILER DETECTED` or `SAFE TO READ` label
-
-Run the app with:
-
-```bash
-streamlit run app.py
-```
-
-Make sure the following model files are available before running the app:
-
-```text
-models/spoiler_detection_pipeline.pkl
-models/best_model_name.pkl
-```
-
-If the app fails to load the model because of dependency version differences, rerun the notebook in the active environment to regenerate the `.pkl` files.
-
-## Deployment
-
-The recommended deployment platform is Streamlit Community Cloud because this project already includes `app.py`, `requirements.txt`, and model files in the `models/` folder.
-
-Deployment steps:
-
-1. Make sure the important files are already in the repository:
-
-```text
-app.py
-requirements.txt
-models/spoiler_detection_pipeline.pkl
-models/best_model_name.pkl
-```
-
-2. Make sure all changes have been pushed to GitHub:
-
-```bash
-git status
-git add README.md requirements.txt app.py models/
-git commit -m "Prepare Streamlit deployment"
-git push origin main
-```
-
-3. Open Streamlit Community Cloud:
-
-```text
-https://share.streamlit.io
-```
-
-4. Log in using the GitHub account that has access to this repository.
-5. Click `Create app`, then choose the option to deploy an app from an existing repository.
-6. Fill in the deployment configuration:
-
-```text
-Repository : LecyLecy/imdb-spoiler-detection-nlp
-Branch     : main
-Main file  : app.py
-App URL    : free to choose, depending on the available name
-```
-
-7. If prompted to choose a Python version, use Python 3.11 to match the project's development environment.
-8. Click deploy and wait for the dependency installation process from `requirements.txt` to finish.
-9. After deployment succeeds, copy the Streamlit app link and place it in the `Try the app` placeholder at the top of the README.
-10. If deployment fails, check the logs section in Streamlit Cloud. The most likely errors are dependency mismatch or missing model files.
-
-## Repository Structure
-
-```text
-imdb-spoiler-detection-nlp/
-|-- data/                         # Local dataset folder, ignored by Git
-|-- figures/                      # Saved visualizations
-|-- models/                       # Saved trained model pipeline
-|-- imdb_venv/                    # Local virtual environment, ignored by Git
-|-- .env                          # Kaggle credentials, ignored by Git
-|-- .env.example                  # Environment variable template
-|-- .gitignore
-|-- app.py                        # Streamlit app for spoiler prediction
-|-- imdb-spoiler-detection-old.ipynb
-|-- README.md
-|-- requirements.txt
-```
-
-## Setup
-
-### 1. Clone Repository
+Python 3.11 is recommended because it matches the environment used for the saved model.
 
 ```bash
 git clone https://github.com/LecyLecy/imdb-spoiler-detection-nlp.git
 cd imdb-spoiler-detection-nlp
-```
 
-### 2. Create Python Virtual Environment
-
-```bash
-py -3.11 -m venv imdb_venv
-imdb_venv\Scripts\activate
-```
-
-### 3. Install Dependencies
-
-```bash
+py -3.11 -m venv .venv
+.venv\Scripts\activate
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
-```
-
-### 4. Register Jupyter Kernel
-
-```bash
-python -m ipykernel install --user --name imdb_spoiler_nlp --display-name "Python (imdb_spoiler_nlp)"
-```
-
-After that, open the notebook and select the kernel:
-
-```text
-Python (imdb_spoiler_nlp)
-```
-
-## Kaggle API Setup
-
-Create a `.env` file in the project root:
-
-```env
-KAGGLE_USERNAME=your_kaggle_username
-KAGGLE_KEY=your_kaggle_api_key
-```
-
-The Kaggle API key can be created from:
-
-```text
-Kaggle Account Settings -> API -> Create New Token
-```
-
-Make sure `.env` is not committed to GitHub.
-
-## Running the Notebook
-
-Open the notebook:
-
-```text
-imdb-spoiler-detection-old.ipynb
-```
-
-Then run the cells sequentially. The notebook will:
-
-- Check the local dataset
-- Download the dataset from Kaggle if it is not available yet
-- Load the full dataset
-- Perform EDA and visualization
-- Create TF-IDF and `word_count` features
-- Train several models
-- Select the best model based on F1-Score
-- Test 20 random review samples
-- Save the best model pipeline
-
-After the model is saved, the Streamlit app can be run with:
-
-```bash
 streamlit run app.py
 ```
 
-## Example Prediction
+Open `http://localhost:8501` if Streamlit does not launch a browser automatically.
 
-```text
-sample_review = The movie ends with the main character dying in the final scene.
-The model is 82.89% confident that sample_review is a spoiler
-The model is 17.11% confident that sample_review is not a spoiler
-Final prediction = spoiler
+Run the model integration checks with:
+
+```bash
+python -m unittest discover -s tests -v
 ```
 
-## Git Ignore Recommendation
+## Reproduce the training workflow
 
-The following files and folders do not need to be pushed to GitHub:
+1. Create a Kaggle API token from your Kaggle account settings.
+2. Copy `.env.example` to `.env`.
+3. Add your credentials:
 
-```gitignore
-.env
-data/
-imdb_venv/
-__pycache__/
-.ipynb_checkpoints/
-*.zip
+```env
+KAGGLE_USERNAME=your_kaggle_username
+KAGGLE_KEY=your_kaggle_key
 ```
 
-## Notes
+4. Open `imdb-spoiler-detection.ipynb` with the Python 3.11 environment.
+5. Run the cells in order to download the data, perform EDA, train the candidates, and export the selected pipeline.
 
-The dataset is not included in the repository because the file size is large and it can be downloaded again from Kaggle. The local cache can also be regenerated by running the notebook.
+The notebook uses the full [IMDb Spoiler Dataset](https://www.kaggle.com/datasets/rmisra/imdb-spoiler-dataset), with `review_text` as the main input and `is_spoiler` as the target.
 
-## License
+## Limitations
 
-This project uses the IMDb Spoiler Dataset from Kaggle. Please refer to the original dataset page for license details and usage terms.
+- The classifier is trained on English IMDb reviews.
+- Very short, sarcastic, or context-dependent reviews can be misclassified.
+- The original class imbalance increases the risk of false-positive spoiler warnings.
+- The 50% threshold is a product default, not a universal safety boundary.
+- Predictions indicate language patterns, not an understanding of a specific movie’s canon.
+
+## Future improvements
+
+- tune the threshold against a product-specific cost function
+- add model calibration and confidence reliability analysis
+- compare the linear baseline with transformer embeddings
+- include per-title context to distinguish known plot details from general language
+- add deployment health checks
+
+## Data and attribution
+
+This project uses the [IMDb Spoiler Dataset](https://www.kaggle.com/datasets/rmisra/imdb-spoiler-dataset) published on Kaggle. Refer to the dataset page for its source terms and attribution requirements.
