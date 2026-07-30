@@ -445,7 +445,7 @@ def main() -> None:
         <section class="hero">
             <div class="eyebrow">
                 <span class="eyebrow-dot"></span>
-                NLP portfolio project
+                NLP spoiler classifier
             </div>
             <h1>Know before you read.<br><span class="accent-line">Keep the plot intact.</span></h1>
             <p>
