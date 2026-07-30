@@ -4,5 +4,7 @@ data/
 .vscode
 .venv
 imdb_venv/
+__pycache__/
+.ipynb_checkpoints/
 setup.txt
 docs/
