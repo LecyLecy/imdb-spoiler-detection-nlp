@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title description">
+  <title id="title">PlotGuard icon</title>
+  <desc id="description">A cinematic shield protecting a play symbol from spoilers.</desc>
+  <defs>
+    <linearGradient id="shield" x1="24" y1="16" x2="104" y2="112" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF6B81"/>
+      <stop offset="1" stop-color="#A855F7"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="38" y1="34" x2="90" y2="88" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1D2233"/>
+      <stop offset="1" stop-color="#090C14"/>
+    </linearGradient>
+  </defs>
+  <path d="M64 10 108 28v31c0 28.8-17.5 48.8-44 59C37.5 107.8 20 87.8 20 59V28L64 10Z" fill="url(#shield)"/>
+  <path d="M64 19 99 33.4v25.2c0 23.1-13.6 39.8-35 49.1-21.4-9.3-35-26-35-49.1V33.4L64 19Z" fill="url(#glass)"/>
+  <path d="M48.6 44.3c0-4.8 5.2-7.8 9.4-5.4l27.6 16c4.2 2.4 4.2 8.4 0 10.8l-27.6 16c-4.2 2.4-9.4-.6-9.4-5.4V44.3Z" fill="#F7F8FC"/>
+  <path d="M61 51.7v17l14.7-8.5L61 51.7Z" fill="#FF5D73"/>
+  <circle cx="96" cy="28" r="8" fill="#51D6A2" stroke="#090C14" stroke-width="4"/>
+</svg>

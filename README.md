@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="./assets/plotguard-icon.svg" alt="PlotGuard icon" width="96" />
+
 # PlotGuard
 
 ### An NLP-powered movie spoiler detector
@@ -82,6 +84,8 @@ These results make the trade-off visible: the selected model finds about 67% of 
 
 ```text
 .
+├── assets/
+│   └── plotguard-icon.svg          # Project icon
 ├── .streamlit/
 │   └── config.toml                 # Application theme
 ├── figures/
