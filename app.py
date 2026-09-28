@@ -6,7 +6,8 @@ import pandas as pd
 import streamlit as st
 
 
-APP_TITLE = "PlotGuard — Movie Spoiler Detector"
+APP_TITLE = "PlotGuard"
+APP_ICON = Path(__file__).resolve().parent / "assets" / "plotguard-icon.svg"
 SPOILER_THRESHOLD = 0.50
 SAFE_EXAMPLE = (
     "Beautiful cinematography, a memorable score, and strong performances make "
@@ -424,7 +425,7 @@ def render_result(result: dict[str, Any]) -> None:
 def main() -> None:
     st.set_page_config(
         page_title=APP_TITLE,
-        page_icon="🎞️",
+        page_icon=APP_ICON,
         layout="wide",
         initial_sidebar_state="collapsed",
     )

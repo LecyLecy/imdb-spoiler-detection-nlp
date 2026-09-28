@@ -35,6 +35,15 @@ The Streamlit app is designed around a simple decision: is this review safe to r
 - Inspect the active model, decision threshold, and input length
 - Read an honest limitation notice for ambiguous predictions
 
+## Application walkthrough
+
+The interface is designed around a focused review workflow: paste an IMDb-style review, run the classifier, then inspect its spoiler likelihood and model context.
+
+| Before analysis | Spoiler detection result |
+| --- | --- |
+| ![PlotGuard review workspace before analysis](./figures/app-before-input.png) | ![PlotGuard spoiler prediction result](./figures/app-spoiler-result.png) |
+| The input workspace provides safe and spoiler examples, a review text area, a word counter, and a single analysis action. | The result view explains the prediction, shows an 80% spoiler likelihood for the sample, and exposes classifier details and limitations. |
+
 ## How it works
 
 ```mermaid
@@ -89,6 +98,8 @@ These results make the trade-off visible: the selected model finds about 67% of 
 ├── .streamlit/
 │   └── config.toml                 # Application theme
 ├── figures/
+│   ├── app-before-input.png         # Input workspace screenshot
+│   ├── app-spoiler-result.png       # Spoiler prediction screenshot
 │   └── best_model_visualization.png
 ├── models/
 │   ├── best_model_name.pkl
